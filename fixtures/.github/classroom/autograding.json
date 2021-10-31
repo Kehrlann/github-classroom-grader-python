@@ -1,0 +1,35 @@
+{
+  "comment": "everything is prefixed by \"fixtures\"",
+  "tests": [
+    {
+      "name": "a test that works",
+      "setup": "",
+      "run": "python3 -m unittest fixtures.test_a.TestA.test_works",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "a test that fails",
+      "setup": "",
+      "run": "python3 -m unittest fixtures.test_a.TestA.test_fails",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 2
+    },
+    {
+      "name": "a test that raises",
+      "setup": "",
+      "run": "python3 -m unittest fixtures.test_a.TestA.test_raises",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 4
+    }
+  ]
+}
