@@ -7,6 +7,22 @@ from unittest.mock import patch
 
 from grader import main
 
+class TestSuccess(TestCase):
+    def setUp(self) -> None:
+        self.start_dir = Path.cwd()
+        os.chdir(Path.cwd() / "fixtures" / "successful_test")
+
+    def tearDown(self) -> None:
+        os.chdir(self.start_dir)
+
+    def test_successful_test(self):
+        out = StringIO()
+        with patch("sys.stdout", new=out):
+            main()
+
+        output: str = out.getvalue()
+        self.assertEqual(output, "TODO")
+
 
 class TestMultipleTests(TestCase):
     def setUp(self) -> None:

@@ -1,0 +1,15 @@
+{
+  "comment": "everything is prefixed by \"fixtures\"",
+  "tests": [
+    {
+      "name": "a test that works",
+      "setup": "",
+      "run": "python3 -m unittest fixtures.test_sample.TestSample.test_works",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    }
+  ]
+}
