@@ -4,7 +4,7 @@
     {
       "name": "a test that works",
       "setup": "",
-      "run": "python3 -m unittest fixtures.test_a.TestA.test_works",
+      "run": "python3 -m unittest fixtures.test_sample.TestSample.test_works",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -14,7 +14,7 @@
     {
       "name": "a test that fails",
       "setup": "",
-      "run": "python3 -m unittest fixtures.test_a.TestA.test_fails",
+      "run": "python3 -m unittest fixtures.test_sample.TestSample.test_fails",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -24,7 +24,7 @@
     {
       "name": "a test that raises",
       "setup": "",
-      "run": "python3 -m unittest fixtures.test_a.TestA.test_raises",
+      "run": "python3 -m unittest fixtures.test_sample.TestSample.test_raises",
       "input": "",
       "output": "",
       "comparison": "included",

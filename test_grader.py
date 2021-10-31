@@ -8,10 +8,10 @@ from unittest.mock import patch
 from grader import main
 
 
-class TestGrader(TestCase):
+class TestMultipleTests(TestCase):
     def setUp(self) -> None:
         self.start_dir = Path.cwd()
-        os.chdir(Path.cwd() / "fixtures")
+        os.chdir(Path.cwd() / "fixtures" / "multi_test")
 
     def tearDown(self) -> None:
         os.chdir(self.start_dir)
@@ -36,7 +36,6 @@ class TestGrader(TestCase):
         self.assertIn("Score: 0/2", output)
         self.assertIn("Score: 0/4", output)
         self.assertIn("Total score: 1/7", output)
-
 
 
 if __name__ == "__main__":
