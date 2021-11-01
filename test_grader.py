@@ -1,11 +1,13 @@
+import os
+import unittest
+from inspect import cleandoc
 from io import StringIO
 from pathlib import Path
-import os
 from unittest import TestCase
-import unittest
 from unittest.mock import patch
 
 from grader import main
+
 
 class TestSuccess(TestCase):
     def setUp(self) -> None:
@@ -20,11 +22,36 @@ class TestSuccess(TestCase):
         with patch("sys.stdout", new=out):
             main()
 
+        expected = cleandoc("""[a test that works] - RUNNING ...
+        [a test that works] - SUCCESS 👍
+        [a test that works] - Score: 1/1
+
+        ~~~~~~~~~
+
+        Total score: 1/1""") + "\n"
         output: str = out.getvalue()
-        self.assertEqual(output, "TODO")
+        self.assertEqual(expected, output)
 
 
 class TestMultipleTests(TestCase):
+    SUCCESSFUL_OUTPUT = cleandoc("""[a test that works] - RUNNING ...
+        [a test that works] - SUCCESS 👍
+        [a test that works] - Score: 1/1
+
+        ~~~~~~~~~""")
+
+    FAILED_OUTPUT = cleandoc("""[a test that fails] - RUNNING ...
+        [a test that fails] - FAILURE 😱
+        [a test that fails] - Score: 0/2
+
+        ~~~~~~~~~""")
+
+    ERRORING_OUTPUT = cleandoc("""[a test that raises] - RUNNING ...
+        [a test that raises] - TEST RAISED ERROR 💥
+        [a test that raises] - Score: 0/4
+
+        ~~~~~~~~~""")
+
     def setUp(self) -> None:
         self.start_dir = Path.cwd()
         os.chdir(Path.cwd() / "fixtures" / "multi_test")
@@ -52,6 +79,22 @@ class TestMultipleTests(TestCase):
         self.assertIn("Score: 0/2", output)
         self.assertIn("Score: 0/4", output)
         self.assertIn("Total score: 1/7", output)
+
+    def test_full_output(self):
+        out = StringIO()
+        with patch("sys.stdout", new=out):
+            main()
+
+        output: str = out.getvalue()
+        expected = f"""{TestMultipleTests.SUCCESSFUL_OUTPUT}
+
+{TestMultipleTests.FAILED_OUTPUT}
+
+{TestMultipleTests.ERRORING_OUTPUT}
+
+Total score: 1/7
+"""
+        self.assertEqual(expected, output)
 
 
 if __name__ == "__main__":
