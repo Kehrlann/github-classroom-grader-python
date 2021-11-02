@@ -18,7 +18,7 @@ class TestOutput(TestCase):
         })
 
         expected = cleandoc(""" [a successful test] - RUNNING ...
-                                [a successful test] - SUCCESS 👍
+                                [a successful test] -\033[32m SUCCESS \033[0m
                                 [a successful test] - Score: 42/42
 
                                 ~~~~~~~~~""")
@@ -33,7 +33,7 @@ class TestOutput(TestCase):
         })
 
         expected = cleandoc(""" [a test with a failure] - RUNNING ...
-                                [a test with a failure] - FAILURE 😱
+                                [a test with a failure] -\033[31m FAILURE \033[0m
                                 [a test with a failure] - Score: 0/3
 
                                 To get the full error message, run:
@@ -52,7 +52,7 @@ class TestOutput(TestCase):
         })
 
         expected = cleandoc(""" [a test that blows up] - RUNNING ...
-                                [a test that blows up] - TEST RAISED ERROR 💥
+                                [a test that blows up] -\033[31m TEST RAISED ERROR \033[0m
                                 [a test that blows up] - Score: 0/7
 
                                 To get the full error message, run:
@@ -72,13 +72,13 @@ class TestFailure(TestCase):
 
 class TestMultipleTests(TestCase):
     SUCCESSFUL_OUTPUT = cleandoc("""[a test that works] - RUNNING ...
-        [a test that works] - SUCCESS 👍
+        [a test that works] -\033[32m SUCCESS \033[0m
         [a test that works] - Score: 1/1
 
         ~~~~~~~~~""")
 
     FAILED_OUTPUT = cleandoc("""[a test that fails] - RUNNING ...
-        [a test that fails] - FAILURE 😱
+        [a test that fails] -\033[31m FAILURE \033[0m
         [a test that fails] - Score: 0/2
 
         To get the full error message, run:
@@ -88,7 +88,7 @@ class TestMultipleTests(TestCase):
         ~~~~~~~~~""")
 
     ERRORING_OUTPUT = cleandoc("""[a test that raises] - RUNNING ...
-        [a test that raises] - TEST RAISED ERROR 💥
+        [a test that raises] -\033[31m TEST RAISED ERROR \033[0m
         [a test that raises] - Score: 0/4
 
         To get the full error message, run:

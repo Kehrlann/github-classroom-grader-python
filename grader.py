@@ -1,5 +1,5 @@
 # Useful date when copying to other projects:
-# 2021-11-02 14:02
+# 2021-11-02 22:13
 
 import json
 import unittest
@@ -37,9 +37,9 @@ class TestResult:
     output: str
     status: str
     STATUS_MESSAGES = {
-        SUCCESS: "SUCCESS 👍",
-        FAILURE: "FAILURE 😱",
-        ERROR: "TEST RAISED ERROR 💥"
+            SUCCESS: "\033[32m SUCCESS \033[0m",
+            FAILURE: "\033[31m FAILURE \033[0m",
+            ERROR: "\033[31m TEST RAISED ERROR \033[0m"
     }
 
     @property
@@ -48,7 +48,7 @@ class TestResult:
 
     def __repr__(self) -> str:
         result = f"""[{self.name}] - RUNNING ...
-            [{self.name}] - {self.STATUS_MESSAGES[self.status]}
+            [{self.name}] -{self.STATUS_MESSAGES[self.status]}
             [{self.name}] - Score: {self.score}
 
             """
