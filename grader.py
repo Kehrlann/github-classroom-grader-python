@@ -5,6 +5,10 @@ from inspect import cleandoc
 from io import StringIO
 from pathlib import Path
 
+SUCCESS = "success"
+FAILURE = "failure"
+ERROR = "error"
+
 
 def main() -> None:
     autograding_file = Path.cwd() / ".github" / "classroom" / "autograding.json"
@@ -23,22 +27,36 @@ def main() -> None:
 
 @dataclass()
 class TestResult:
+    command: str
     name: str
     points: int
     max_points: int
     output: str
     status: str
+    STATUS_MESSAGES = {
+        SUCCESS: "SUCCESS 👍",
+        FAILURE: "FAILURE 😱",
+        ERROR: "TEST RAISED ERROR 💥"
+    }
 
     @property
     def score(self) -> str:
         return f"{self.points}/{self.max_points}"
 
     def __repr__(self) -> str:
-        return cleandoc(f"""[{self.name}] - RUNNING ...
-            [{self.name}] - {self.status}
+        result = f"""[{self.name}] - RUNNING ...
+            [{self.name}] - {self.STATUS_MESSAGES[self.status]}
             [{self.name}] - Score: {self.score}
 
-            ~~~~~~~~~""")
+            """
+        if self.status != SUCCESS:
+            result += f"""To get the full error message, run:
+
+            {self.command.replace("python3", "python")}
+
+            """
+        result += "~~~~~~~~~"
+        return cleandoc(result)
 
 
 def run_test(test_def: dict) -> TestResult:
@@ -46,12 +64,13 @@ def run_test(test_def: dict) -> TestResult:
     suite = unittest.TestLoader().loadTestsFromName(run)
     test_output = StringIO()
     result = unittest.TextTestRunner(stream=test_output).run(suite)
-    status = "SUCCESS 👍"
+    status = SUCCESS
     if result.errors:
-        status = "TEST RAISED ERROR 💥"
+        status = ERROR
     elif not result.wasSuccessful():
-        status = "FAILURE 😱"
+        status = FAILURE
     return TestResult(
+        command=test_def["run"],
         name=test_def["name"],
         points=test_def["points"] if result.wasSuccessful() else 0,
         max_points=test_def["points"],
