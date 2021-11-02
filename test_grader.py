@@ -6,31 +6,26 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
-from grader import main
+from grader import main, run_test
 
 
-class TestSuccess(TestCase):
-    def setUp(self) -> None:
-        self.start_dir = Path.cwd()
-        os.chdir(Path.cwd() / "fixtures" / "successful_test")
+class TestOutput(TestCase):
+    def test_successful_output(self):
+        actual = run_test({
+            "name": "a successful test",
+            "points": 1,
+            "run": "python3 -m unittest fixtures.test_sample.TestSample.test_works"
+        })
 
-    def tearDown(self) -> None:
-        os.chdir(self.start_dir)
+        expected = cleandoc(""" [a successful test] - RUNNING ...
+                                [a successful test] - SUCCESS 👍
+                                [a successful test] - Score: 1/1
 
-    def test_successful_test(self):
-        out = StringIO()
-        with patch("sys.stdout", new=out):
-            main()
+                                ~~~~~~~~~""")
 
-        expected = cleandoc("""[a test that works] - RUNNING ...
-        [a test that works] - SUCCESS 👍
-        [a test that works] - Score: 1/1
+        self.assertEqual(expected, str(actual))
 
-        ~~~~~~~~~
 
-        Total score: 1/1""") + "\n"
-        output: str = out.getvalue()
-        self.assertEqual(expected, output)
 
 
 class TestMultipleTests(TestCase):
