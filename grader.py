@@ -1,3 +1,6 @@
+# Useful date when copying to other projects:
+# 2021-11-02 14:02
+
 import json
 import unittest
 from dataclasses import dataclass
