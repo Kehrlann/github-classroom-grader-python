@@ -11,11 +11,13 @@ from grader import main, run_test
 
 class TestOutput(TestCase):
     def test_successful_output(self):
-        actual = run_test({
+        test_spec = {
             "name": "a successful test",
             "points": 42,
             "run": "python3 -m unittest fixtures.test_sample.TestSample.test_works"
-        })
+        }
+        actual = run_test(test_spec)
+        actual_verbose = run_test(test_spec, verbose=True)
 
         expected = cleandoc(""" [a successful test] - RUNNING ...
                                 [a successful test] -\033[32m SUCCESS \033[0m
@@ -24,6 +26,7 @@ class TestOutput(TestCase):
                                 ~~~~~~~~~""")
 
         self.assertEqual(expected, str(actual))
+        self.assertEqual(expected, str(actual_verbose))
 
     def test_failed_output(self):
         actual = run_test({
@@ -42,6 +45,43 @@ class TestOutput(TestCase):
 
                                 ~~~~~~~~~""")
 
+        self.assertEqual(expected, str(actual))
+
+    def test_failed_output_verbose(self):
+        actual = run_test({
+            "name": "a test with a failure",
+            "points": 3,
+            "run": "python3 -m unittest fixtures.test_sample.TestSample.test_fails"
+        }, verbose=True)
+
+        expected = cleandoc(""" [a test with a failure] - RUNNING ...
+                                [a test with a failure] -\033[31m FAILURE \033[0m
+                                [a test with a failure] - Score: 0/3
+
+                                To get the full error message, run:
+
+                                python -m unittest fixtures.test_sample.TestSample.test_fails
+
+                                Full error message:""")
+        expected += """
+
+F
+======================================================================
+FAIL: test_fails (fixtures.test_sample.TestSample)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dgarnier/workspace/daniel/mines/grader/fixtures/test_sample.py", line 9, in test_fails
+    self.assertTrue(False)
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)
+"""
+        expected += "\n\n~~~~~~~~~"
+
+        self.maxDiff = None
         self.assertEqual(expected, str(actual))
 
     def test_error_output(self):

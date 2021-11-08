@@ -1,5 +1,5 @@
 # Useful date when copying to other projects:
-# 2021-11-02 22:13
+# 2021-11-08 12:23
 
 import json
 import unittest
@@ -7,13 +7,14 @@ from dataclasses import dataclass
 from inspect import cleandoc
 from io import StringIO
 from pathlib import Path
+import sys
 
 SUCCESS = "success"
 FAILURE = "failure"
 ERROR = "error"
 
 
-def main() -> None:
+def main(verbose: bool = False) -> None:
     autograding_file = Path.cwd() / ".github" / "classroom" / "autograding.json"
     with open(autograding_file, 'r') as f:
         contents = json.loads(f.read())
@@ -21,7 +22,7 @@ def main() -> None:
         total_score = 0
         max_points = 0
         for test in contents["tests"]:
-            result = run_test(test)
+            result = run_test(test, verbose=verbose)
             total_score += result.points
             max_points += result.max_points
             print(result, "\n", sep="")
@@ -30,6 +31,7 @@ def main() -> None:
 
 @dataclass()
 class TestResult:
+    verbose: bool
     command: str
     name: str
     points: int
@@ -37,9 +39,9 @@ class TestResult:
     output: str
     status: str
     STATUS_MESSAGES = {
-            SUCCESS: "\033[32m SUCCESS \033[0m",
-            FAILURE: "\033[31m FAILURE \033[0m",
-            ERROR: "\033[31m TEST RAISED ERROR \033[0m"
+        SUCCESS: "\033[32m SUCCESS \033[0m",
+        FAILURE: "\033[31m FAILURE \033[0m",
+        ERROR: "\033[31m TEST RAISED ERROR \033[0m"
     }
 
     @property
@@ -58,11 +60,16 @@ class TestResult:
             {self.command.replace("python3", "python")}
 
             """
-        result += "~~~~~~~~~"
-        return cleandoc(result)
+        result = cleandoc(result)
+        if self.status != SUCCESS and self.verbose:
+            result += "\n\n"
+            result += "Full error message:\n\n"
+            result += self.output
+        result += "\n\n~~~~~~~~~"
+        return result
 
 
-def run_test(test_def: dict) -> TestResult:
+def run_test(test_def: dict, verbose: bool = False) -> TestResult:
     run = test_def["run"].replace("python3 -m unittest ", "")
     suite = unittest.TestLoader().loadTestsFromName(run)
     test_output = StringIO()
@@ -78,12 +85,13 @@ def run_test(test_def: dict) -> TestResult:
         points=test_def["points"] if result.wasSuccessful() else 0,
         max_points=test_def["points"],
         output=test_output.getvalue(),
-        status=status
+        status=status,
+        verbose=verbose
     )
 
 
 if __name__ == "__main__":
-    main()
+    main(verbose=("-v" in sys.argv))
 
 
 # TODO:
