@@ -1,8 +1,9 @@
 # Useful date when copying to other projects:
-# 2021-11-08 12:23
+# 2021-11-28 13:38
 
 import json
 import unittest
+from unittest.mock import patch
 from dataclasses import dataclass
 from inspect import cleandoc
 from io import StringIO
@@ -70,24 +71,25 @@ class TestResult:
 
 
 def run_test(test_def: dict, verbose: bool = False) -> TestResult:
-    run = test_def["run"].replace("python3 -m unittest ", "")
-    suite = unittest.TestLoader().loadTestsFromName(run)
     test_output = StringIO()
-    result = unittest.TextTestRunner(stream=test_output).run(suite)
-    status = SUCCESS
-    if result.errors:
-        status = ERROR
-    elif not result.wasSuccessful():
-        status = FAILURE
-    return TestResult(
-        command=test_def["run"],
-        name=test_def["name"],
-        points=test_def["points"] if result.wasSuccessful() else 0,
-        max_points=test_def["points"],
-        output=test_output.getvalue(),
-        status=status,
-        verbose=verbose
-    )
+    with patch("sys.stdout", new=test_output):
+        run = test_def["run"].replace("python3 -m unittest ", "")
+        suite = unittest.TestLoader().loadTestsFromName(run)
+        result = unittest.TextTestRunner(stream=test_output).run(suite)
+        status = SUCCESS
+        if result.errors:
+            status = ERROR
+        elif not result.wasSuccessful():
+            status = FAILURE
+        return TestResult(
+            command=test_def["run"],
+            name=test_def["name"],
+            points=test_def["points"] if result.wasSuccessful() else 0,
+            max_points=test_def["points"],
+            output=test_output.getvalue(),
+            status=status,
+            verbose=verbose
+        )
 
 
 if __name__ == "__main__":
